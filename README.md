@@ -1,0 +1,2 @@
+# skicom
+Ski Communicator
