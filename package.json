@@ -1,0 +1,27 @@
+{
+  "name": "skicom",
+  "version": "1.0.0",
+  "description": "Ski Communicator",
+  "main": "server.js",
+  "scripts": {
+    "dev": "nodemon server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/azbix/skicom.git"
+  },
+  "author": "ik",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/azbix/skicom/issues"
+  },
+  "homepage": "https://github.com/azbix/skicom#readme",
+  "dependencies": {
+    "body-parser": "^1.16.0",
+    "express": "^4.14.1",
+    "mongodb": "^2.2.22"
+  },
+  "devDependencies": {
+    "nodemon": "^1.11.0"
+  }
+}
