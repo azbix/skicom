@@ -1,0 +1,7 @@
+.git
+.gitignore
+api/node_modules
+webapp/node_modules
+webapp/build
+README.md
+docker-compose.yml

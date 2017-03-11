@@ -1,0 +1,47 @@
+version: '2'
+services:
+
+  nginx:
+    image: nginx:alpine
+    volumes:
+      - ./nginx_root:/nginx_root
+      - ./site.conf:/etc/nginx/conf.d/site.conf
+    ports:
+      - "80:80"
+    depends_on:
+      - webpack
+      - nodejs
+
+  webpack:
+    image: node:alpine
+    volumes:
+      - ./webapp:/webapp
+    working_dir: /webapp
+    command: sh -c 'npm install; npm start'
+    environment:
+      CHOKIDAR_USEPOLLING: 1
+
+  nodejs:
+    image: node:alpine
+    volumes:
+      - ./api:/usr/src/app
+    working_dir: /usr/src/app
+    command: sh -c 'npm install; npm install -g nodemon; nodemon -L -e js server.js'
+    ports:
+      - "8001:80"
+    depends_on:
+      - mongo
+      - redis
+    environment:
+      MONGODB_URI: "mongodb://mongo:27017/skicom"
+
+  mongo:
+    image: mongo:latest
+    command: mongod --smallfiles
+    ports:
+      - "27017:27017"
+
+  redis:
+    image: redis:alpine
+    ports:
+      - "6379:6379"
