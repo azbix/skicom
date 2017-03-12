@@ -1,10 +1,10 @@
 export const REQUEST_POSTS = 'REQUEST_POSTS'
 export const RECEIVE_POSTS = 'RECEIVE_POSTS'
-export const INVALIDATE_SUBREDDIT = 'INVALIDATE_SUBREDDIT'
+export const INVALIDATE_REDDIT = 'INVALIDATE_REDDIT'
 
-export function invalidateSubreddit() {
+export function invalidateReddit() {
   return {
-    type: INVALIDATE_SUBREDDIT
+    type: INVALIDATE_REDDIT
   }
 }
 
@@ -24,15 +24,15 @@ function receivePosts(json) {
 
 function fetchPosts() {
   return dispatch => {
-    dispatch(requestPosts())
-    return fetch(`https://www.reddit.com/r/frontend.json`)
-      .then(response => response.json())
+    dispatch(requestPosts());
+    return fetch(`http://www.reddit.com/r/reactjs.json`)
+      .then(req => req.json())
       .then(json => dispatch(receivePosts(json)))
   }
 }
 
 function shouldFetchPosts(state) {
-  const posts = state.postsBySubreddit['frontend']
+  const posts = state.postsByReddit['reactjs'];
   if (!posts) {
     return true
   } else if (posts.isFetching) {
