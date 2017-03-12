@@ -5,10 +5,15 @@
   "dependencies": {
     "react": "^15.4.2",
     "react-dom": "^15.4.2",
+    "redux": "latest",
+    "react-redux": "latest",
+    "redux-thunk": "latest",
+    "redux-logger": "latest",
     "material-design-lite": "latest"
   },
   "devDependencies": {
-    "react-scripts": "0.9.4"
+    "react-scripts": "0.9.4",
+    "redux-devtools": "latest"
   },
   "scripts": {
     "start": "react-scripts start",
