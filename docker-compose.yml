@@ -26,9 +26,10 @@ services:
     volumes:
       - ./api:/usr/src/app
     working_dir: /usr/src/app
-    command: sh -c 'npm install; npm install -g nodemon; nodemon -L -e js server.js'
+    command: sh -c 'npm install; npm install -g nodemon; nodemon --debug=0.0.0.0:5858 -L -e js server.js'
     ports:
       - "8001:80"
+      - "5858:5858"
     depends_on:
       - mongo
       - redis
@@ -45,3 +46,10 @@ services:
     image: redis:alpine
     ports:
       - "6379:6379"
+
+  mosquitto:
+    image: eclipse-mosquitto:latest
+    ports:
+      - "1883:1883"
+      - "9001:9001"
+
