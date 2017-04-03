@@ -1,12 +1,14 @@
 import React, {Component, PropTypes} from 'react'
 import {connect} from 'react-redux'
-import {fetchPostsIfNeeded, invalidateReddit} from '../actions'
-import Posts from '../components/Posts'
+import {fetchPostsIfNeeded, invalidateMessagesList, sendMessge} from '../actions'
+import Posts from './Posts'
+import NewMessageInput from './NewMessageInput'
 
-class AsyncApp extends Component {
+class App extends Component {
   constructor(props) {
     super(props)
     this.handleRefreshClick = this.handleRefreshClick.bind(this)
+    this.handleSendTextMessage = this.handleSendTextMessage.bind(this)
   }
 
   componentDidMount() {
@@ -14,12 +16,17 @@ class AsyncApp extends Component {
     dispatch(fetchPostsIfNeeded())
   }
 
-  handleRefreshClick(e) {
-    e.preventDefault()
+  handleRefreshClick(event) {
+    event.preventDefault()
 
     const {dispatch} = this.props
-    dispatch(invalidateReddit())
+    dispatch(invalidateMessagesList())
     dispatch(fetchPostsIfNeeded())
+  }
+
+  handleSendTextMessage(newMessage) {
+    const {dispatch} = this.props
+    dispatch(sendMessge(newMessage))
   }
 
   render() {
@@ -58,24 +65,13 @@ class AsyncApp extends Component {
             }
           </div>
         </main>
-        <div style={{padding: '0 10px'}}>
-          <div className="mdl-textfield mdl-js-textfield">
-            <input className="mdl-textfield__input" type="text" id="sample1"/>
-            <label className="mdl-textfield__label" htmlFor="sample1">Text...</label>
-          </div>
-          <button className="mdl-button mdl-js-button" style={{margin: '0 10px'}} onClick={this.sendTextMessage}>Send
-          </button>
-        </div>
+        <NewMessageInput newMessage="" handleSend={this.handleSendTextMessage} />
       </div>
     )
   }
-
-  sendTextMessage() {
-    console.log('TEST!!!');
-  }
 }
 
-AsyncApp.propTypes = {
+App.propTypes = {
   posts: PropTypes.array.isRequired,
   isFetching: PropTypes.bool.isRequired,
   lastUpdated: PropTypes.number,
@@ -83,12 +79,12 @@ AsyncApp.propTypes = {
 }
 
 function mapStateToProps(state) {
-  const {postsByReddit} = state
+  const {chatMessages} = state
   const {
     isFetching,
     lastUpdated,
     items: posts
-  } = postsByReddit['reactjs'] || {
+  } = chatMessages['messages'] || {
     isFetching: true,
     items: []
   }
@@ -100,4 +96,4 @@ function mapStateToProps(state) {
   }
 }
 
-export default connect(mapStateToProps)(AsyncApp)
+export default connect(mapStateToProps)(App)

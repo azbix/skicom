@@ -1,5 +1,5 @@
 import { combineReducers } from 'redux'
-import { INVALIDATE_REDDIT, REQUEST_POSTS, RECEIVE_POSTS } from './actions'
+import { INVALIDATE_MESSAGES_LIST, REQUEST_POSTS, RECEIVE_POSTS } from './actions'
 
 function posts(state = {
   isFetching: false,
@@ -7,7 +7,7 @@ function posts(state = {
   items: []
 }, action) {
   switch (action.type) {
-  case INVALIDATE_REDDIT:
+  case INVALIDATE_MESSAGES_LIST:
     return Object.assign({}, state, {
       didInvalidate: true
     })
@@ -28,13 +28,13 @@ function posts(state = {
   }
 }
 
-function postsByReddit(state = { }, action) {
+function chatMessages(state = { }, action) {
   switch (action.type) {
-  case INVALIDATE_REDDIT:
+  case INVALIDATE_MESSAGES_LIST:
   case RECEIVE_POSTS:
   case REQUEST_POSTS:
     return Object.assign({}, state, {
-      reactjs: posts(state['reactjs'], action)
+      messages: posts(state['messages'], action)
     })
   default:
     return state
@@ -42,7 +42,7 @@ function postsByReddit(state = { }, action) {
 }
 
 const rootReducer = combineReducers({
-  postsByReddit
+  chatMessages
 })
 
 export default rootReducer

@@ -1,10 +1,40 @@
 export const REQUEST_POSTS = 'REQUEST_POSTS'
 export const RECEIVE_POSTS = 'RECEIVE_POSTS'
-export const INVALIDATE_REDDIT = 'INVALIDATE_REDDIT'
+export const INVALIDATE_MESSAGES_LIST = 'INVALIDATE_MESSAGES_LIST'
+export const SEND_MESSAGE_COMPLETED = 'SEND_MESSAGE_COMPLETED'
 
-export function invalidateReddit() {
+export function sendMessge(text) {
+  return dispatch => {
+    return fetch(
+      'http://skicom.local/api/messages', {
+        method: 'POST',
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          author: 'IK',
+          text: text
+        })
+      })
+      .then(req => req.json())
+      .then(json => {
+        dispatch(sendMessgeCompleted())
+        dispatch(invalidateMessagesList())
+        dispatch(fetchPostsIfNeeded())
+      })
+  }
+}
+
+export function sendMessgeCompleted() {
   return {
-    type: INVALIDATE_REDDIT
+    type: SEND_MESSAGE_COMPLETED
+  }
+}
+
+export function invalidateMessagesList() {
+  return {
+    type: INVALIDATE_MESSAGES_LIST
   }
 }
 
@@ -17,7 +47,7 @@ function requestPosts() {
 function receivePosts(json) {
   return {
     type: RECEIVE_POSTS,
-    posts: json.data.children.map(child => child.data),
+    posts: json,
     receivedAt: Date.now()
   }
 }
@@ -25,14 +55,14 @@ function receivePosts(json) {
 function fetchPosts() {
   return dispatch => {
     dispatch(requestPosts());
-    return fetch(`http://www.reddit.com/r/reactjs.json`)
+    return fetch('http://skicom.local/api/messages')
       .then(req => req.json())
       .then(json => dispatch(receivePosts(json)))
   }
 }
 
 function shouldFetchPosts(state) {
-  const posts = state.postsByReddit['reactjs'];
+  const posts = state.chatMessages['messages'];
   if (!posts) {
     return true
   } else if (posts.isFetching) {
