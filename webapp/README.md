@@ -62,6 +62,8 @@ You can find the most recent version of this guide [here](https://github.com/fac
 - [Developing Components in Isolation](#developing-components-in-isolation)
 - [Making a Progressive Web App](#making-a-progressive-web-app)
 - [Deployment](#deployment)
+  - [Static Server](#static-server)
+  - [Other Solutions](#other-solutions)
   - [Serving Apps with Client-Side Routing](#serving-apps-with-client-side-routing)
   - [Building for Relative Paths](#building-for-relative-paths)
   - [Azure](#azure)
@@ -172,7 +174,7 @@ See the section about [deployment](#deployment) for more information.
 
 If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
 
-Instead, it will copy all the configuration files and the transitive dependencies (Webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
+Instead, it will copy all the configuration files and the transitive dependencies (Webpack, Babel, TSLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
 
 You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
 
@@ -207,48 +209,11 @@ To configure the syntax highlighting in your favorite text editor, head to the [
 
 >Note: this feature is available with `react-scripts@0.2.0` and higher.
 
-Some editors, including Sublime Text, Atom, and Visual Studio Code, provide plugins for ESLint.
+Some editors, including Sublime Text, Atom, and Visual Studio Code, provide plugins for TSLint.
 
 They are not required for linting. You should see the linter output right in your terminal as well as the browser console. However, if you prefer the lint results to appear right in your editor, there are some extra steps you can do.
 
-You would need to install an ESLint plugin for your editor first.
-
->**A note for Atom `linter-eslint` users**
-
->If you are using the Atom `linter-eslint` plugin, make sure that **Use global ESLint installation** option is checked:
-
-><img src="http://i.imgur.com/yVNNHJM.png" width="300">
-
-
->**For Visual Studio Code users**
-
->VS Code ESLint plugin automatically detects Create React App's configuration file. So you do not need to create `eslintrc.json` at the root directory, except when you want to add your own rules. In that case, you should include CRA's config by adding this line:
-
->```js
-{
-  // ...
-  "extends": "react-app"
-}
-```
-
-Then add this block to the `package.json` file of your project:
-
-```js
-{
-  // ...
-  "eslintConfig": {
-    "extends": "react-app"
-  }
-}
-```
-
-Finally, you will need to install some packages *globally*:
-
-```sh
-npm install -g eslint-config-react-app@0.3.0 eslint@3.8.1 babel-eslint@7.0.0 eslint-plugin-react@6.4.1 eslint-plugin-import@2.0.1 eslint-plugin-jsx-a11y@4.0.0 eslint-plugin-flowtype@2.21.0
-```
-
-We recognize that this is suboptimal, but it is currently required due to the way we hide the ESLint dependency. The ESLint team is already [working on a solution to this](https://github.com/eslint/eslint/issues/3458) so this may become unnecessary in a couple of months.
+You would need to install an TSLint plugin for your editor first.
 
 ## Debugging in the Editor
 
@@ -581,7 +546,7 @@ const $ = window.$;
 
 This makes it obvious you are using a global variable intentionally rather than because of a typo.
 
-Alternatively, you can force the linter to ignore any line by adding `// eslint-disable-line` after it.
+Alternatively, you can force the linter to ignore any line by adding `// tslint:disable-line` after it.
 
 ## Adding Bootstrap
 
@@ -630,12 +595,12 @@ Recent versions of [Flow](http://flowtype.org/) work with Create React App proje
 
 To add Flow to a Create React App project, follow these steps:
 
-1. Run `npm install --save-dev flow-bin`.
+1. Run `npm install --save-dev flow-bin` (or `yarn add --dev flow-bin`).
 2. Add `"flow": "flow"` to the `scripts` section of your `package.json`.
-3. Run `npm run flow -- init` to create a [`.flowconfig` file](https://flowtype.org/docs/advanced-configuration.html) in the root directory.
+3. Run `npm run flow -- init` (or `yarn flow -- init`) to create a [`.flowconfig` file](https://flowtype.org/docs/advanced-configuration.html) in the root directory.
 4. Add `// @flow` to any files you want to type check (for example, to `src/App.js`).
 
-Now you can run `npm run flow` to check the files for type errors.
+Now you can run `npm run flow` (or `yarn flow`) to check the files for type errors.
 You can optionally use an IDE like [Nuclide](https://nuclide.io/docs/languages/flow/) for a better integrated experience.
 In the future we plan to integrate it into Create React App even more closely.
 
@@ -1040,18 +1005,34 @@ and then use them in your tests like you normally do.
 
 >Note: this feature is available with `react-scripts@0.4.0` and higher.
 
-If your app uses a browser API that you need to mock in your tests or if you just need a global setup before running your tests, add a `src/setupTests.js` to your project. It will be automatically executed before running your tests.
+If your app uses a browser API that you need to mock in your tests or if you just need a global setup before running your tests, add a `src/setupTests.ts` to your project. It will be automatically executed before running your tests.
 
 For example:
 
-#### `src/setupTests.js`
+#### `src/setupTests.ts`
 ```js
-const localStorageMock = {
-  getItem: jest.fn(),
-  setItem: jest.fn(),
-  clear: jest.fn()
+declare global {
+    interface localStorage {
+        getItem: any;
+        setItem: any;
+        clean: any;
+    }
+}
+
+class LocalStorageMock {
+  store = {};
+  clear() {
+    this.store = {};
+  }
+  getItem(key: any) {
+    return this.store[key];
+  }
+  setItem(key: any, value: any) {
+    this.store[key] = value.toString();
+  }
 };
-global.localStorage = localStorageMock
+
+global.localStorage = new LocalStorageMock();
 ```
 
 ### Focusing and Excluding Tests
@@ -1208,14 +1189,30 @@ You can turn your React app into a [Progressive Web App](https://developers.goog
 
 ## Deployment
 
-`npm run build` creates a `build` directory with a production build of your app. Set up your favourite HTTP server so that a visitor to your site is served `index.html`, and requests to static paths like `/static/js/main.<hash>.js` are served with the contents of the `/static/js/main.<hash>.js` file. For example, Python contains a built-in HTTP server that can serve static files:
+`npm run build` creates a `build` directory with a production build of your app. Set up your favourite HTTP server so that a visitor to your site is served `index.html`, and requests to static paths like `/static/js/main.<hash>.js` are served with the contents of the `/static/js/main.<hash>.js` file.
+
+### Static Server
+
+For environments using [Node](https://nodejs.org/), the easiest way to handle this would be to install [serve](https://github.com/zeit/serve) and let it handle the rest:
 
 ```sh
-cd build
-python -m SimpleHTTPServer 9000
+npm install -g serve
+serve -s build
 ```
 
-If you’re using [Node](https://nodejs.org/) and [Express](http://expressjs.com/) as a server, it might look like this:
+The last command shown above will serve your static site on the port **5000**. Like many of [serve](https://github.com/zeit/serve)’s internal settings, the port can be adjusted using the `-p` or `--port` flags.
+
+Run this command to get a full list of the options available:
+
+```sh
+serve -h
+```
+
+### Other Solutions
+
+You don’t necessarily need a static server in order to run a Create React App project in production. It works just as fine integrated into an existing dynamic one.
+
+Here’s a programmatic example using [Node](https://nodejs.org/) and [Express](http://expressjs.com/):
 
 ```javascript
 const express = require('express');
@@ -1231,7 +1228,9 @@ app.get('/', function (req, res) {
 app.listen(9000);
 ```
 
-Create React App is not opinionated about your choice of web server. Any static file server will do. The `build` folder with static assets is the only output produced by Create React App.
+The choice of your server software isn’t important either. Since Create React App is completely platform-agnostic, there’s no need to explicitly use Node.
+
+The `build` folder with static assets is the only output produced by Create React App.
 
 However this is not quite enough if you use client-side routing. Read the next section if you want to support URLs like `/todos/42` in your single-page app.
 
