@@ -24,13 +24,18 @@ type SendMessgeCompletedAction = {
     type: SEND_MESSAGE_COMPLETED
 }
 
-type OtherAction = { type: '' }
+type APPEND_POST = 'APPEND_POST';
+type AppendPostAction = {
+    type: APPEND_POST,
+    post: IPost,
+    receivedAt: number
+}
 
 type ChatAction =
     InvalidateMessagesListAction |
     RequestPostsAction |
     ReceivePostsAction |
-    OtherAction;
+    AppendPostAction;
 
 interface IAppProps {
     posts: Array<IPost>;

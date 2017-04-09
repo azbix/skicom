@@ -2,6 +2,7 @@ export const REQUEST_POSTS: REQUEST_POSTS = 'REQUEST_POSTS';
 export const RECEIVE_POSTS: RECEIVE_POSTS = 'RECEIVE_POSTS';
 export const INVALIDATE_MESSAGES_LIST: INVALIDATE_MESSAGES_LIST = 'INVALIDATE_MESSAGES_LIST';
 export const SEND_MESSAGE_COMPLETED: SEND_MESSAGE_COMPLETED = 'SEND_MESSAGE_COMPLETED';
+export const APPEND_POST: APPEND_POST = 'APPEND_POST';
 
 export function sendMessge(text: string) {
     return (dispatch: Function) => {
@@ -20,8 +21,9 @@ export function sendMessge(text: string) {
             .then(req => req.json())
             .then(json => {
                 dispatch(sendMessgeCompleted());
-                dispatch(invalidateMessagesList());
-                dispatch(fetchPostsIfNeeded());
+// Now handled my mqtt websocket update
+//                dispatch(invalidateMessagesList());
+//                dispatch(fetchPostsIfNeeded());
             });
     };
 }
@@ -60,6 +62,15 @@ function fetchPosts(): (dispatch: Function) => void {
             .then((json: Response) => {
                 dispatch(receivePosts(json));
             });
+    };
+}
+
+export function appendPostFromMqtt(json: string): AppendPostAction {
+    let data: IPost = JSON.parse(json);
+    return {
+        type: APPEND_POST,
+        post: data,
+        receivedAt: Date.now()
     };
 }
 

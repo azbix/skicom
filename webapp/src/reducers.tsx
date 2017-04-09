@@ -1,5 +1,5 @@
 import {combineReducers} from 'redux';
-import {INVALIDATE_MESSAGES_LIST, REQUEST_POSTS, RECEIVE_POSTS} from './actions';
+import {INVALIDATE_MESSAGES_LIST, REQUEST_POSTS, RECEIVE_POSTS, APPEND_POST} from './actions';
 
 function posts(state: IMessages = {isFetching: false, didInvalidate: false, items: []}, action: ChatAction): IMessages {
     switch (action.type) {
@@ -19,6 +19,15 @@ function posts(state: IMessages = {isFetching: false, didInvalidate: false, item
                 items: action.posts,
                 lastUpdated: action.receivedAt
             });
+        case APPEND_POST:
+            let updatedItems = state.items || [];
+            updatedItems.push(action.post);
+            return Object.assign({}, state, {
+                isFetching: false,
+                didInvalidate: false,
+                items: updatedItems,
+                lastUpdated: action.receivedAt
+            });
         default:
             return state;
     }
@@ -29,6 +38,7 @@ function chatMessages(state: IChatMessages = {}, action: ChatAction): IChatMessa
         case INVALIDATE_MESSAGES_LIST:
         case RECEIVE_POSTS:
         case REQUEST_POSTS:
+        case APPEND_POST:
             return Object.assign({}, state, {
                 messages: posts(state.messages, action)
             });

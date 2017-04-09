@@ -48,7 +48,11 @@ services:
       - "6379:6379"
 
   mosquitto:
-    image: eclipse-mosquitto:latest
+    image: eclipse-mosquitto:1.4.4
+    volumes:
+      - ./mosquitto/config:/mosquitto/config
+      - ./mosquitto/data:/mosquitto/data
+      - ./mosquitto/log:/mosquitto/log
     ports:
       - "1883:1883"
       - "9001:9001"

@@ -1,12 +1,11 @@
 import * as React from 'react';
 import {connect} from 'react-redux';
-import {fetchPostsIfNeeded, invalidateMessagesList, sendMessge} from '../actions';
+import {fetchPostsIfNeeded, invalidateMessagesList, sendMessge, appendPostFromMqtt} from '../actions';
 import {NewMessageInput} from './NewMessageInput';
 import {Posts} from './Posts';
+import * as MqttClient from 'mqtt';
 
 class App extends React.Component<IAppProps, IAppState> {
-
-//  connection: any;
 
   constructor(props: IAppProps) {
     super(props);
@@ -17,21 +16,26 @@ class App extends React.Component<IAppProps, IAppState> {
   componentDidMount(): void {
     const {dispatch} = this.props;
     dispatch(fetchPostsIfNeeded());
+    this.subscribeOnMqttUpdates();
+  }
 
-//       // this is an "echo" websocket service for testing pusposes
-//       this.connection = new WebSocket('wss://skicom.local:9001');
-//       // listen to onmessage event
-//       this.connection.onmessage = (evt: any) => {
-//         // add the new message to state
-//         console.log(evt.data);
-//       };
-      //
-      // // for testing: sending a message to the echo service every 2 seconds,
-      // // the service sends it right back
-      // setInterval( _ =>{
-      //   this.connection.send( Math.random() )
-      // }, 2000 );
+  subscribeOnMqttUpdates() {
+    const {dispatch} = this.props;
 
+    let mqttClient = MqttClient.connect('ws://skicom.local:9001', {
+      clientId: 'bgtestreact',
+      protocolId: 'MQIsdp',
+      protocolVersion: 3,
+      connectTimeout: 1000
+    });
+    mqttClient.on('connect', function() {
+      mqttClient.subscribe('messages');
+    });
+    mqttClient.on('message', function(topic: string, payload: Buffer) {
+      if (topic === 'messages') {
+        dispatch(appendPostFromMqtt(payload.toString()));
+      }
+    });
   }
 
   handleRefreshClick(e: React.MouseEvent<HTMLAnchorElement>): void {
