@@ -1,0 +1,3 @@
+# mqtt dynamic files
+/mosquitto/data/*
+/mosquitto/log/*
