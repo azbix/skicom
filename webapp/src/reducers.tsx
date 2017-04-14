@@ -20,12 +20,12 @@ function posts(state: IMessages = {isFetching: false, didInvalidate: false, item
                 lastUpdated: action.receivedAt
             });
         case APPEND_POST:
-            let updatedItems = state.items || [];
-            updatedItems.push(action.post);
+            let items = state.items || [];
+//            updatedItems.push(action.post);
             return Object.assign({}, state, {
                 isFetching: false,
                 didInvalidate: false,
-                items: updatedItems,
+                items: [...items, action.post],
                 lastUpdated: action.receivedAt
             });
         default:
