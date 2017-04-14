@@ -18,6 +18,8 @@ services:
       - ./webapp:/webapp
     working_dir: /webapp
     command: sh -c 'npm install; npm start'
+    ports:
+      - "3000:3000"
     environment:
       CHOKIDAR_USEPOLLING: 1
 

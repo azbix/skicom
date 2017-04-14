@@ -1,9 +1,12 @@
 import * as React from 'react';
+import {now} from 'moment';
 import {connect} from 'react-redux';
 import {fetchPostsIfNeeded, invalidateMessagesList, sendMessge, appendPostFromMqtt} from '../actions';
 import {NewMessageInput} from './NewMessageInput';
 import {Posts} from './Posts';
 import * as MqttClient from 'mqtt';
+
+const Time = require('react-time').default;
 
 class App extends React.Component<IAppProps, IAppState> {
 
@@ -61,6 +64,8 @@ class App extends React.Component<IAppProps, IAppState> {
         <main className="mdl-layout__content" style={{flex: '1 0 auto'}}>
           <div>
             <p>
+              <span>Today: <Time value={now()} format="YYYY/MM/DD" /></span>
+              <br/>
               {lastUpdated &&
               <span>Last updated at {new Date(lastUpdated).toLocaleTimeString()}.{' '}</span>
               }
